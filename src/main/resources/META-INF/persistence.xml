@@ -12,9 +12,6 @@
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./data/demo" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-            <property name="javax.persistence.schema-generation.database.action" value="create"/>
-            <property name="javax.persistence.schema-generation.create-source" value="metadata"/>
-            <property name="javax.persistence.schema-generation.drop-source" value="metadata"/>
         </properties>
 
     </persistence-unit>
