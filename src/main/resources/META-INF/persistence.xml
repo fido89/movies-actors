@@ -6,7 +6,7 @@
              version="2.1">
     <persistence-unit name="movies-actors" transaction-type="JTA">
 
-        <class>movies.Movies</class>
+        <class>movies.Movie</class>
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />

@@ -7,12 +7,12 @@ import java.io.Serializable;
 @Table(name = "movies")
 @NamedQueries({
         @NamedQuery(
-                name = "Movies.findMovies",
+                name = "Movie.findMovies",
                 query = "SELECT m " +
-                        "FROM Movies m"
+                        "FROM Movie m"
         )
 })
-public class Movies implements Serializable {
+public class Movie implements Serializable {
     @Id
     private String imdbId;
     @Column(name = "title")
