@@ -48,7 +48,7 @@ public class MoviesService {
         return false;
     }
 
-    @Transactional(Transactional.TxType.REQUIRED)
+    @Transactional
     public void deleteMovie(String movieId) {
         Movie movie = em.find(Movie.class, movieId);
         if (movie != null) {

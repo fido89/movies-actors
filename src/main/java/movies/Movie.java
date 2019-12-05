@@ -2,6 +2,7 @@ package movies;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "movies")
@@ -21,6 +22,10 @@ public class Movie implements Serializable {
     private int year;
     @Column(name = "description")
     private String description;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "movies_pictures", joinColumns = @JoinColumn(name = "movie_imdbID"))
+    @Column(name = "picture_url")
+    private List<String> pictureUrls;
 
     public String getImdbId() {
         return imdbId;
@@ -52,5 +57,13 @@ public class Movie implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<String> getPictureUrls() {
+        return pictureUrls;
+    }
+
+    public void setPictureUrls(List<String> pictureUrls) {
+        this.pictureUrls = pictureUrls;
     }
 }

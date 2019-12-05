@@ -23,6 +23,7 @@ public class FlywayIntegrator implements Integrator {
             flyway.migrate();
         } catch (FlywayException e) {
             logger.log(Level.SEVERE, "Error while migrating:", e);
+            System.exit(0);
         }
         logger.log(Level.INFO, "Finished Flyway Migration");
     }
