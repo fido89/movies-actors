@@ -1,4 +1,7 @@
-package movies;
+package movies.controller;
+
+import movies.domain.Movie;
+import movies.service.MoviesService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -11,7 +14,7 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path("movies")
-public class MoviesResource {
+public class MoviesController {
 
     @Inject
     private MoviesService moviesService;

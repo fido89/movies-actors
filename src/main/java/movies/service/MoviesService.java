@@ -1,4 +1,6 @@
-package movies;
+package movies.service;
+
+import movies.domain.Movie;
 
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;

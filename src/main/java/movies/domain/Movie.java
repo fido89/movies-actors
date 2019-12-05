@@ -1,4 +1,4 @@
-package movies;
+package movies.domain;
 
 import javax.persistence.*;
 import java.io.Serializable;
