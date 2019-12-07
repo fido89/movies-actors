@@ -1,5 +1,6 @@
 package movies.service;
 
+import movies.domain.Actor;
 import movies.domain.Movie;
 import org.hibernate.Session;
 
@@ -23,7 +24,7 @@ public class MoviesService {
         return movies;
     }
 
-    public Movie getMovie(long movieId) {
+    public Movie getMovie(Long movieId) {
         return em.find(Movie.class, movieId);
     }
 
@@ -40,7 +41,7 @@ public class MoviesService {
     }
 
     @Transactional
-    public boolean updateMovie(long movieId, Movie movie) {
+    public boolean updateMovie(Long movieId, Movie movie) {
         if (movie != null) {
             Movie existingMovie = em.find(Movie.class, movieId);
             if (existingMovie != null && existingMovie.getImdbId().equals(movie.getImdbId())) {
@@ -52,10 +53,30 @@ public class MoviesService {
     }
 
     @Transactional
-    public void deleteMovie(long movieId) {
+    public void deleteMovie(Long movieId) {
         Movie movie = em.find(Movie.class, movieId);
         if (movie != null) {
             em.remove(movie);
+        }
+    }
+
+    @Transactional
+    public Movie addActor(Long movieId, Actor actor) {
+        Movie movie = em.find(Movie.class, movieId);
+        if (movie != null) {
+            movie.addActor(actor);
+            em.merge(movie);
+        }
+        return movie;
+    }
+
+    @Transactional
+    public void removeActor(Long movieId, Long actorId) {
+        Movie movie = em.find(Movie.class, movieId);
+        Actor actor = em.find(Actor.class, actorId);
+        if (movie != null && actor != null) {
+            movie.removeActor(actor);
+            em.merge(movie);
         }
     }
 }

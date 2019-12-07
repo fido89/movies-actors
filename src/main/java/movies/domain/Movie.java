@@ -4,8 +4,10 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity(name = "Movie")
 @Table(name = "movies")
@@ -37,7 +39,18 @@ public class Movie implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "movies_pictures", joinColumns = @JoinColumn(name = "movie_id"))
     @Column(name = "picture_url")
-    private List<String> pictureUrls;
+    private Set<String> pictureUrls;
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    },
+            fetch = FetchType.EAGER)
+    @JoinTable(name = "movies_actors",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "actor_id")
+    )
+    private Set<Actor> actors = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -79,12 +92,22 @@ public class Movie implements Serializable {
         this.description = description;
     }
 
-    public List<String> getPictureUrls() {
+    public Set<String> getPictureUrls() {
         return pictureUrls;
     }
 
-    public void setPictureUrls(List<String> pictureUrls) {
-        this.pictureUrls = pictureUrls;
+    public Set<Actor> getActors() {
+        return actors;
+    }
+
+    public void addActor(Actor actor) {
+        actors.add(actor);
+        actor.getMovies().add(this);
+    }
+
+    public void removeActor(Actor actor) {
+        actors.remove(actor);
+        actor.getMovies().remove(this);
     }
 
     @Override

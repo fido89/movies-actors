@@ -1,5 +1,6 @@
 package movies.controller;
 
+import movies.domain.Actor;
 import movies.domain.Movie;
 import movies.service.MoviesService;
 
@@ -27,7 +28,7 @@ public class MoviesController {
 
     @GET
     @Path("{movieId}")
-    public Response getMovie(@PathParam("movieId") long movieId) {
+    public Response getMovie(@PathParam("movieId") Long movieId) {
         Movie movie = moviesService.getMovie(movieId);
         return movie != null
                 ? Response.ok(movie).build()
@@ -42,15 +43,38 @@ public class MoviesController {
 
     @PUT
     @Path("{movieId}")
-    public Response updateMovie(@PathParam("movieId") long movieId, Movie movie) {
+    public Response updateMovie(@PathParam("movieId") Long movieId, Movie movie) {
         boolean success = moviesService.updateMovie(movieId, movie);
         return success ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @DELETE
     @Path("{movieId}")
-    public Response deleteMovie(@PathParam("movieId") long movieId) {
+    public Response deleteMovie(@PathParam("movieId") Long movieId) {
         moviesService.deleteMovie(movieId);
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/{movieId}/actors")
+    public Response getActors(@PathParam("movieId") Long movieId) {
+        Movie movie = moviesService.getMovie(movieId);
+        return movie != null
+                ? Response.ok(movie.getActors()).build()
+                : Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @POST
+    @Path("/{movieId}/actors")
+    public Response addActor(@PathParam("movieId") Long movieId, Actor actor) {
+        Movie movie = moviesService.addActor(movieId, actor);
+        return movie != null ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @DELETE
+    @Path("/{movieId}/actors/{actorId}")
+    public Response removeActor(@PathParam("movieId") Long movieId, @PathParam("actorId") Long actorId) {
+        moviesService.removeActor(movieId, actorId);
         return Response.noContent().build();
     }
 }
