@@ -1,6 +1,7 @@
 package movies.service;
 
 import movies.domain.Movie;
+import org.hibernate.Session;
 
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
@@ -22,14 +23,14 @@ public class MoviesService {
         return movies;
     }
 
-    public Movie getMovie(String movieId) {
+    public Movie getMovie(long movieId) {
         return em.find(Movie.class, movieId);
     }
 
     @Transactional
     public boolean addMovie(Movie movie) {
         if (movie != null) {
-            Movie existingMovie = em.find(Movie.class, movie.getImdbId());
+            Movie existingMovie = em.unwrap(Session.class).bySimpleNaturalId(Movie.class).load(movie.getImdbId());
             if (existingMovie == null) {
                 em.persist(movie);
                 return true;
@@ -39,10 +40,10 @@ public class MoviesService {
     }
 
     @Transactional
-    public boolean updateMovie(String movieId, Movie movie) {
+    public boolean updateMovie(long movieId, Movie movie) {
         if (movie != null) {
             Movie existingMovie = em.find(Movie.class, movieId);
-            if (existingMovie != null) {
+            if (existingMovie != null && existingMovie.getImdbId().equals(movie.getImdbId())) {
                 em.merge(movie);
                 return true;
             }
@@ -51,7 +52,7 @@ public class MoviesService {
     }
 
     @Transactional
-    public void deleteMovie(String movieId) {
+    public void deleteMovie(long movieId) {
         Movie movie = em.find(Movie.class, movieId);
         if (movie != null) {
             em.remove(movie);

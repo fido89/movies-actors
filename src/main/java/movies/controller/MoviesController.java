@@ -27,7 +27,7 @@ public class MoviesController {
 
     @GET
     @Path("{movieId}")
-    public Response getMovie(@PathParam("movieId") String movieId) {
+    public Response getMovie(@PathParam("movieId") long movieId) {
         Movie movie = moviesService.getMovie(movieId);
         return movie != null
                 ? Response.ok(movie).build()
@@ -42,14 +42,14 @@ public class MoviesController {
 
     @PUT
     @Path("{movieId}")
-    public Response updateMovie(@PathParam("movieId") String movieId, Movie movie) {
+    public Response updateMovie(@PathParam("movieId") long movieId, Movie movie) {
         boolean success = moviesService.updateMovie(movieId, movie);
         return success ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @DELETE
     @Path("{movieId}")
-    public Response deleteMovie(@PathParam("movieId") String movieId) {
+    public Response deleteMovie(@PathParam("movieId") long movieId) {
         moviesService.deleteMovie(movieId);
         return Response.noContent().build();
     }

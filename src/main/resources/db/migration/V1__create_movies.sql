@@ -1,8 +1,10 @@
 CREATE TABLE movies (
-  imdbID VARCHAR(50) PRIMARY KEY,
+  id IDENTITY NOT NULL PRIMARY KEY,
+  imdbID VARCHAR(50),
   title VARCHAR(250) NOT NULL,
   year INT NOT NULL,
-  description VARCHAR
+  description VARCHAR,
+  UNIQUE KEY movies_imdbID_UNIQUE (imdbID)
 );
 
 INSERT INTO movies (imdbID, title, year, description) VALUES
