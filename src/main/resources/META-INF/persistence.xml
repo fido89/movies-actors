@@ -7,7 +7,7 @@
     <persistence-unit name="movies-actors" transaction-type="JTA">
 
         <class>movies.domain.Movie</class>
-
+        <class>movies.domain.Actor</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./data/demo" />

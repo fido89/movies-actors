@@ -1,13 +1,16 @@
 package movies.controller;
 
+import com.kumuluz.ee.rest.beans.QueryParameters;
 import movies.domain.Actor;
 import movies.service.ActorsService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
 @RequestScoped
@@ -18,11 +21,15 @@ public class ActorsController {
 
     @Inject
     private ActorsService actorService;
+    @Context
+    protected UriInfo uriInfo;
 
     @GET
     public Response getAllActors() {
-        List<Actor> actors = actorService.getActors();
-        return Response.ok(actors).build();
+        QueryParameters query = createQuery();
+        List<Actor> actors = actorService.getActors(query);
+        Long allActorsCount = actorService.getActorsCount(query);
+        return Response.ok(actors).header("X-Total-Count", allActorsCount).build();
     }
 
     @GET
@@ -52,5 +59,9 @@ public class ActorsController {
     public Response deleteActor(@PathParam("actorId") long actorId) {
         actorService.deleteActor(actorId);
         return Response.noContent().build();
+    }
+
+    private QueryParameters createQuery() {
+        return QueryParameters.query(uriInfo.getRequestUri().getQuery()).defaultOffset(0).defaultLimit(10).build();
     }
 }

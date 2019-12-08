@@ -10,13 +10,6 @@ import java.util.Set;
 
 @Entity(name = "Actor")
 @Table(name = "actors")
-@NamedQueries({
-        @NamedQuery(
-                name = "Actor.findActors",
-                query = "SELECT a " +
-                        "FROM Actor a"
-        )
-})
 public class Actor implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,7 @@
 package movies.service;
 
+import com.kumuluz.ee.rest.beans.QueryParameters;
+import com.kumuluz.ee.rest.utils.JPAUtils;
 import movies.domain.Actor;
 import movies.domain.Movie;
 import org.hibernate.Session;
@@ -16,12 +18,13 @@ public class MoviesService {
     @PersistenceContext
     private EntityManager em;
 
-    public List<Movie> getMovies() {
-        List<Movie> movies = em
-                .createNamedQuery("Movie.findMovies", Movie.class)
-                .getResultList();
-
+    public List<Movie> getMovies(QueryParameters query) {
+        List<Movie> movies = JPAUtils.queryEntities(em, Movie.class, query);
         return movies;
+    }
+
+    public Long getMoviesCount(QueryParameters query) {
+        return JPAUtils.queryEntitiesCount(em, Movie.class, query);
     }
 
     public Movie getMovie(Long movieId) {

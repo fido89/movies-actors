@@ -12,6 +12,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <kumuluzee.version>3.6.0</kumuluzee.version>
+        <kumuluzee-rest.version>1.2.3</kumuluzee-rest.version>
     </properties>
 
     <dependencyManagement>
@@ -49,7 +50,11 @@
             <artifactId>flyway-core</artifactId>
             <version>6.1.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.kumuluz.ee.rest</groupId>
+            <artifactId>kumuluzee-rest-core</artifactId>
+            <version>${kumuluzee-rest.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

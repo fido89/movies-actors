@@ -11,13 +11,6 @@ import java.util.Set;
 
 @Entity(name = "Movie")
 @Table(name = "movies")
-@NamedQueries({
-        @NamedQuery(
-                name = "Movie.findMovies",
-                query = "SELECT m " +
-                        "FROM Movie m"
-        )
-})
 public class Movie implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
