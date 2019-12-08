@@ -85,6 +85,13 @@ public class MoviesController {
         return Response.noContent().build();
     }
 
+    @GET
+    @Path("/search")
+    public Response searchMovies(@QueryParam("keyword") String keyword) {
+        List<Movie> movies = moviesService.searchByKeyword(keyword);
+        return Response.ok(movies).build();
+    }
+
     private QueryParameters createQuery() {
         return QueryParameters.query(uriInfo.getRequestUri().getQuery()).defaultOffset(0).defaultLimit(10).build();
     }

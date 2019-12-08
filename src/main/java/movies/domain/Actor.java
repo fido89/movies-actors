@@ -1,11 +1,11 @@
 package movies.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.search.annotations.Field;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity(name = "Actor")
@@ -16,9 +16,11 @@ public class Actor implements Serializable {
     private Long id;
 
     @Column(name = "name")
+    @Field
     private String name;
 
     @Column(name = "surname")
+    @Field
     private String surname;
 
     @ManyToMany(mappedBy = "actors", fetch = FetchType.EAGER)

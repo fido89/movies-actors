@@ -1,16 +1,19 @@
 package movies.domain;
 
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "Movie")
 @Table(name = "movies")
+@Indexed
 public class Movie implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +24,7 @@ public class Movie implements Serializable {
     private String imdbId;
 
     @Column(name = "title")
+    @Field
     private String title;
 
     @Column(name = "year")
@@ -43,6 +47,7 @@ public class Movie implements Serializable {
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
+    @IndexedEmbedded
     private Set<Actor> actors = new HashSet<>();
 
     public Long getId() {

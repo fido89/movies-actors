@@ -5,11 +5,15 @@ import com.kumuluz.ee.rest.utils.JPAUtils;
 import movies.domain.Actor;
 import movies.domain.Movie;
 import org.hibernate.Session;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.QueryBuilder;
 
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
 
 @RequestScoped
@@ -81,5 +85,22 @@ public class MoviesService {
             movie.removeActor(actor);
             em.merge(movie);
         }
+    }
+
+    public List<Movie> searchByKeyword(String keyword) {
+        if (keyword == null) {
+            return Collections.emptyList();
+        }
+        FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(em);
+        QueryBuilder qb = fullTextEntityManager.getSearchFactory()
+                .buildQueryBuilder().forEntity(Movie.class).get();
+        var luceneQuery = qb
+                .keyword()
+                .onFields("title", "actors.name", "actors.surname")
+                .matching(keyword)
+                .createQuery();
+        var jpaQuery =
+                fullTextEntityManager.createFullTextQuery(luceneQuery, Movie.class);
+        return jpaQuery.getResultList();
     }
 }
