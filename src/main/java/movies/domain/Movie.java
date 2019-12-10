@@ -1,5 +1,7 @@
 package movies.domain;
 
+import movies.domain.dtos.ActorDto;
+import movies.domain.dtos.MovieDto;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -10,6 +12,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity(name = "Movie")
 @Table(name = "movies")
@@ -49,6 +52,18 @@ public class Movie implements Serializable {
     )
     @IndexedEmbedded
     private Set<Actor> actors = new HashSet<>();
+
+    public Movie() {
+    }
+
+    public Movie(String imdbId, String title, int year, String description, Set<String> pictureUrls, Set<Actor> actors) {
+        this.imdbId = imdbId;
+        this.title = title;
+        this.year = year;
+        this.description = description;
+        this.pictureUrls = pictureUrls;
+        this.actors = actors;
+    }
 
     public Long getId() {
         return id;
@@ -108,6 +123,14 @@ public class Movie implements Serializable {
         actor.getMovies().remove(this);
     }
 
+    public void setPictureUrls(Set<String> pictureUrls) {
+        this.pictureUrls = pictureUrls;
+    }
+
+    public void setActors(Set<Actor> actors) {
+        this.actors = actors;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -121,4 +144,10 @@ public class Movie implements Serializable {
     public int hashCode() {
         return Objects.hash(imdbId);
     }
+
+    public MovieDto toDto() {
+        Set<ActorDto> actorDtos = actors.stream().map(Actor::toDto).collect(Collectors.toSet());
+        return new MovieDto(id, imdbId, title, year, description, pictureUrls, actorDtos);
+    }
+
 }

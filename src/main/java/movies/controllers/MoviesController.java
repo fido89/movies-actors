@@ -2,17 +2,15 @@ package movies.controllers;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import movies.annotations.Stats;
-import movies.domain.Actor;
 import movies.domain.Movie;
+import movies.domain.dtos.ActorDto;
+import movies.domain.dtos.MovieDto;
 import movies.service.MoviesService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import java.util.List;
 
 @RequestScoped
@@ -30,7 +28,7 @@ public class MoviesController {
     @Stats
     public Response getAllMovies() {
         QueryParameters query = createQuery();
-        List<Movie> movies = moviesService.getMovies(query);
+        List<MovieDto> movies = moviesService.getMovies(query);
         Long allMoviesCount = moviesService.getMoviesCount(query);
         return Response.ok(movies).header("X-Total-Count", allMoviesCount).build();
     }
@@ -38,16 +36,17 @@ public class MoviesController {
     @GET
     @Path("{movieId}")
     @Stats
-    public Response getMovie(@PathParam("movieId") Long movieId) {
-        Movie movie = moviesService.getMovie(movieId);
-        return movie != null
-                ? Response.ok(movie).build()
-                : Response.status(Response.Status.NOT_FOUND).build();
+    public Response getMovie(@PathParam("movieId") Long movieId, @Context Request request) {
+        MovieDto movie = moviesService.getMovie(movieId);
+        if (movie == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(movie).build();
     }
 
     @POST
     @Stats
-    public Response addNewMovie(Movie movie) {
+    public Response addNewMovie(MovieDto movie) {
         boolean success = moviesService.addMovie(movie);
         return success ? Response.noContent().build() : Response.status(Response.Status.CONFLICT).build();
     }
@@ -55,7 +54,7 @@ public class MoviesController {
     @PUT
     @Path("{movieId}")
     @Stats
-    public Response updateMovie(@PathParam("movieId") Long movieId, Movie movie) {
+    public Response updateMovie(@PathParam("movieId") Long movieId, MovieDto movie) {
         boolean success = moviesService.updateMovie(movieId, movie);
         return success ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -72,7 +71,7 @@ public class MoviesController {
     @Path("{movieId}/actors")
     @Stats
     public Response getActors(@PathParam("movieId") Long movieId) {
-        Movie movie = moviesService.getMovie(movieId);
+        MovieDto movie = moviesService.getMovie(movieId);
         return movie != null
                 ? Response.ok(movie.getActors()).build()
                 : Response.status(Response.Status.NOT_FOUND).build();
@@ -81,7 +80,7 @@ public class MoviesController {
     @POST
     @Path("{movieId}/actors")
     @Stats
-    public Response addActor(@PathParam("movieId") Long movieId, Actor actor) {
+    public Response addActor(@PathParam("movieId") Long movieId, ActorDto actor) {
         Movie movie = moviesService.addActor(movieId, actor);
         return movie != null ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -98,7 +97,7 @@ public class MoviesController {
     @Path("search")
     @Stats
     public Response searchMovies(@QueryParam("keyword") String keyword) {
-        List<Movie> movies = moviesService.searchByKeyword(keyword);
+        List<MovieDto> movies = moviesService.searchByKeyword(keyword);
         return Response.ok(movies).build();
     }
 

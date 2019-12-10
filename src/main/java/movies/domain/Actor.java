@@ -1,11 +1,13 @@
 package movies.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import movies.domain.dtos.ActorDto;
 import org.hibernate.search.annotations.Field;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "Actor")
@@ -26,6 +28,15 @@ public class Actor implements Serializable {
     @ManyToMany(mappedBy = "actors", fetch = FetchType.EAGER)
     @JsonBackReference
     private Set<Movie> movies = new HashSet<>();
+
+    public Actor() {
+    }
+
+    public Actor(Long id, String name, String surname) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+    }
 
     public Long getId() {
         return id;
@@ -60,10 +71,15 @@ public class Actor implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hashCode(id);
     }
 
     public Set<Movie> getMovies() {
         return movies;
     }
+
+    public ActorDto toDto() {
+        return new ActorDto(id, name, surname);
+    }
+
 }

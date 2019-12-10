@@ -2,7 +2,7 @@ package movies.controllers;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import movies.annotations.Stats;
-import movies.domain.Actor;
+import movies.domain.dtos.ActorDto;
 import movies.service.ActorsService;
 
 import javax.enterprise.context.RequestScoped;
@@ -29,7 +29,7 @@ public class ActorsController {
     @Stats
     public Response getAllActors() {
         QueryParameters query = createQuery();
-        List<Actor> actors = actorService.getActors(query);
+        List<ActorDto> actors = actorService.getActors(query);
         Long allActorsCount = actorService.getActorsCount(query);
         return Response.ok(actors).header("X-Total-Count", allActorsCount).build();
     }
@@ -38,7 +38,7 @@ public class ActorsController {
     @Path("{actorId}")
     @Stats
     public Response getMovie(@PathParam("actorId") long actorId) {
-        Actor actor = actorService.getActor(actorId);
+        ActorDto actor = actorService.getActor(actorId);
         return actor != null
                 ? Response.ok(actor).build()
                 : Response.status(Response.Status.NOT_FOUND).build();
@@ -46,7 +46,7 @@ public class ActorsController {
 
     @POST
     @Stats
-    public Response addNewActor(Actor actor) {
+    public Response addNewActor(ActorDto actor) {
         boolean success = actorService.addActor(actor);
         return success ? Response.noContent().build() : Response.status(Response.Status.CONFLICT).build();
     }
@@ -54,7 +54,7 @@ public class ActorsController {
     @PUT
     @Path("{actorId}")
     @Stats
-    public Response updateActor(@PathParam("actorId") long actorId, Actor actor) {
+    public Response updateActor(@PathParam("actorId") long actorId, ActorDto actor) {
         boolean success = actorService.updateActor(actorId, actor);
         return success ? Response.ok(actor).build() : Response.status(Response.Status.NOT_FOUND).build();
     }

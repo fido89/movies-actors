@@ -4,6 +4,8 @@ import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
 import movies.domain.Actor;
 import movies.domain.Movie;
+import movies.domain.dtos.ActorDto;
+import movies.domain.dtos.MovieDto;
 import org.hibernate.Session;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -15,6 +17,8 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequestScoped
 public class MoviesService {
@@ -22,25 +26,26 @@ public class MoviesService {
     @PersistenceContext
     private EntityManager em;
 
-    public List<Movie> getMovies(QueryParameters query) {
+    public List<MovieDto> getMovies(QueryParameters query) {
         List<Movie> movies = JPAUtils.queryEntities(em, Movie.class, query);
-        return movies;
+        return movies.stream().map(Movie::toDto).collect(Collectors.toList());
     }
 
     public Long getMoviesCount(QueryParameters query) {
         return JPAUtils.queryEntitiesCount(em, Movie.class, query);
     }
 
-    public Movie getMovie(Long movieId) {
-        return em.find(Movie.class, movieId);
+    public MovieDto getMovie(Long movieId) {
+        Movie movie = em.find(Movie.class, movieId);
+        return movie != null ? movie.toDto() : null;
     }
 
     @Transactional
-    public boolean addMovie(Movie movie) {
+    public boolean addMovie(MovieDto movie) {
         if (movie != null) {
             Movie existingMovie = em.unwrap(Session.class).bySimpleNaturalId(Movie.class).load(movie.getImdbId());
             if (existingMovie == null) {
-                em.persist(movie);
+                em.merge(movie.toMovie());
                 return true;
             }
         }
@@ -48,11 +53,20 @@ public class MoviesService {
     }
 
     @Transactional
-    public boolean updateMovie(Long movieId, Movie movie) {
+    public boolean updateMovie(Long movieId, MovieDto movie) {
         if (movie != null) {
             Movie existingMovie = em.find(Movie.class, movieId);
             if (existingMovie != null && existingMovie.getImdbId().equals(movie.getImdbId())) {
-                em.merge(movie);
+                existingMovie.setDescription(movie.getDescription());
+                existingMovie.setTitle(movie.getTitle());
+                existingMovie.setYear(movie.getYear());
+                existingMovie.setPictureUrls(movie.getPictureUrls());
+                Set<Actor> actorsToSet = null;
+                if (movie.getActors() != null) {
+                    actorsToSet = movie.getActors().stream().map(ActorDto::toActor).collect(Collectors.toSet());
+                }
+                existingMovie.setActors(actorsToSet);
+                em.merge(existingMovie);
                 return true;
             }
         }
@@ -68,10 +82,10 @@ public class MoviesService {
     }
 
     @Transactional
-    public Movie addActor(Long movieId, Actor actor) {
+    public Movie addActor(Long movieId, ActorDto actor) {
         Movie movie = em.find(Movie.class, movieId);
         if (movie != null) {
-            movie.addActor(actor);
+            movie.addActor(actor.toActor());
             em.merge(movie);
         }
         return movie;
@@ -87,7 +101,7 @@ public class MoviesService {
         }
     }
 
-    public List<Movie> searchByKeyword(String keyword) {
+    public List<MovieDto> searchByKeyword(String keyword) {
         if (keyword == null) {
             return Collections.emptyList();
         }
@@ -101,6 +115,7 @@ public class MoviesService {
                 .createQuery();
         var jpaQuery =
                 fullTextEntityManager.createFullTextQuery(luceneQuery, Movie.class);
-        return jpaQuery.getResultList();
+        List<Movie> results = jpaQuery.getResultList();
+        return results.stream().map(Movie::toDto).collect(Collectors.toList());
     }
 }
