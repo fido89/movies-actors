@@ -3,6 +3,7 @@ package movies.domain.dtos;
 import movies.domain.Actor;
 import movies.domain.Movie;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,4 +64,10 @@ public class MovieDto {
     public Set<ActorDto> getActors() {
         return actors;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(imdbId, title, year, description, pictureUrls, actors);
+    }
+
 }

@@ -2,6 +2,8 @@ package movies.domain.dtos;
 
 import movies.domain.Actor;
 
+import java.util.Objects;
+
 public class ActorDto {
     private Long id;
     private String name;
@@ -30,5 +32,10 @@ public class ActorDto {
 
     public Actor toActor() {
         return new Actor(id, name, surname);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, surname);
     }
 }

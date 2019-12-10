@@ -53,24 +53,20 @@ public class MoviesService {
     }
 
     @Transactional
-    public boolean updateMovie(Long movieId, MovieDto movie) {
-        if (movie != null) {
-            Movie existingMovie = em.find(Movie.class, movieId);
-            if (existingMovie != null && existingMovie.getImdbId().equals(movie.getImdbId())) {
-                existingMovie.setDescription(movie.getDescription());
-                existingMovie.setTitle(movie.getTitle());
-                existingMovie.setYear(movie.getYear());
-                existingMovie.setPictureUrls(movie.getPictureUrls());
-                Set<Actor> actorsToSet = null;
-                if (movie.getActors() != null) {
-                    actorsToSet = movie.getActors().stream().map(ActorDto::toActor).collect(Collectors.toSet());
-                }
-                existingMovie.setActors(actorsToSet);
-                em.merge(existingMovie);
-                return true;
+    public void updateMovie(Long movieId, MovieDto movie) {
+        Movie existingMovie = em.find(Movie.class, movieId);
+        if (existingMovie != null && existingMovie.getImdbId().equals(movie.getImdbId())) {
+            existingMovie.setDescription(movie.getDescription());
+            existingMovie.setTitle(movie.getTitle());
+            existingMovie.setYear(movie.getYear());
+            existingMovie.setPictureUrls(movie.getPictureUrls());
+            Set<Actor> actorsToSet = null;
+            if (movie.getActors() != null) {
+                actorsToSet = movie.getActors().stream().map(ActorDto::toActor).collect(Collectors.toSet());
             }
+            existingMovie.setActors(actorsToSet);
+            em.merge(existingMovie);
         }
-        return false;
     }
 
     @Transactional

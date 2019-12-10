@@ -8,10 +8,7 @@ import movies.service.ActorsService;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import java.util.List;
 
 @RequestScoped
@@ -37,26 +34,37 @@ public class ActorsController {
     @GET
     @Path("{actorId}")
     @Stats
-    public Response getMovie(@PathParam("actorId") long actorId) {
+    public Response getMovie(@PathParam("actorId") long actorId, @Context Request request) {
         ActorDto actor = actorService.getActor(actorId);
         return actor != null
-                ? Response.ok(actor).build()
+                ? getResponseWithHTTPCache(request, actor)
                 : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @POST
     @Stats
     public Response addNewActor(ActorDto actor) {
-        boolean success = actorService.addActor(actor);
-        return success ? Response.noContent().build() : Response.status(Response.Status.CONFLICT).build();
+        actorService.addActor(actor);
+        return Response.noContent().build();
     }
 
     @PUT
     @Path("{actorId}")
     @Stats
-    public Response updateActor(@PathParam("actorId") long actorId, ActorDto actor) {
-        boolean success = actorService.updateActor(actorId, actor);
-        return success ? Response.ok(actor).build() : Response.status(Response.Status.NOT_FOUND).build();
+    public Response updateActor(@PathParam("actorId") long actorId, @Context Request request, ActorDto actor) {
+        ActorDto existingActor = actorService.getActor(actorId);
+        if (existingActor == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        EntityTag etag = new EntityTag(Integer.toString(existingActor.hashCode()));
+        Response.ResponseBuilder builder = request.evaluatePreconditions(etag);
+        // client is not up to date
+        if (builder != null) {
+            return builder.build();
+        }
+        actorService.updateActor(actorId, actor);
+        builder = Response.noContent();
+        return builder.build();
     }
 
     @DELETE
@@ -69,5 +77,15 @@ public class ActorsController {
 
     private QueryParameters createQuery() {
         return QueryParameters.query(uriInfo.getRequestUri().getQuery()).defaultOffset(0).defaultLimit(10).build();
+    }
+
+    private Response getResponseWithHTTPCache(Request request, ActorDto actor) {
+        EntityTag etag = new EntityTag(Integer.toString(actor.hashCode()));
+        Response.ResponseBuilder builder = request.evaluatePreconditions(etag);
+        if (builder == null) {
+            builder = Response.ok(actor);
+            builder.tag(etag);
+        }
+        return builder.build();
     }
 }

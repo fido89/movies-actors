@@ -33,24 +33,18 @@ public class ActorsService {
     }
 
     @Transactional
-    public boolean addActor(ActorDto actorDto) {
-        if (actorDto != null) {
-            em.persist(actorDto.toActor());
-            return true;
-        }
-        return false;
+    public void addActor(ActorDto actorDto) {
+        em.persist(actorDto.toActor());
     }
 
     @Transactional
-    public boolean updateActor(long actorId, ActorDto actorDto) {
-        if (actorDto != null) {
-            Actor actor = em.find(Actor.class, actorId);
+    public void updateActor(long actorId, ActorDto actorDto) {
+        Actor actor = em.find(Actor.class, actorId);
+        if (actor != null) {
             actor.setName(actorDto.getName());
             actor.setSurname(actorDto.getSurname());
             em.merge(actor);
-            return true;
         }
-        return false;
     }
 
     @Transactional

@@ -38,10 +38,9 @@ public class MoviesController {
     @Stats
     public Response getMovie(@PathParam("movieId") Long movieId, @Context Request request) {
         MovieDto movie = moviesService.getMovie(movieId);
-        if (movie == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok(movie).build();
+        return movie != null
+                ? getResponseWithHTTPCache(request, movie)
+                : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @POST
@@ -54,9 +53,20 @@ public class MoviesController {
     @PUT
     @Path("{movieId}")
     @Stats
-    public Response updateMovie(@PathParam("movieId") Long movieId, MovieDto movie) {
-        boolean success = moviesService.updateMovie(movieId, movie);
-        return success ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
+    public Response updateMovie(@PathParam("movieId") Long movieId, @Context Request request, MovieDto movie) {
+        MovieDto existingMovie = moviesService.getMovie(movieId);
+        if (existingMovie == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        EntityTag etag = new EntityTag(Integer.toString(existingMovie.hashCode()));
+        Response.ResponseBuilder builder = request.evaluatePreconditions(etag);
+        // client is not up to date
+        if (builder != null) {
+            return builder.build();
+        }
+        moviesService.updateMovie(movieId, movie);
+        builder = Response.noContent();
+        return builder.build();
     }
 
     @DELETE
@@ -103,5 +113,15 @@ public class MoviesController {
 
     private QueryParameters createQuery() {
         return QueryParameters.query(uriInfo.getRequestUri().getQuery()).defaultOffset(0).defaultLimit(10).build();
+    }
+
+    private Response getResponseWithHTTPCache(Request request, MovieDto movie) {
+        EntityTag etag = new EntityTag(Integer.toString(movie.hashCode()));
+        Response.ResponseBuilder builder = request.evaluatePreconditions(etag);
+        if (builder == null) {
+            builder = Response.ok(movie);
+            builder.tag(etag);
+        }
+        return builder.build();
     }
 }
