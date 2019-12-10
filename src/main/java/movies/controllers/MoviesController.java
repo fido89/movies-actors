@@ -1,6 +1,7 @@
-package movies.controller;
+package movies.controllers;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
+import movies.annotations.Stats;
 import movies.domain.Actor;
 import movies.domain.Movie;
 import movies.service.MoviesService;
@@ -26,6 +27,7 @@ public class MoviesController {
     protected UriInfo uriInfo;
 
     @GET
+    @Stats
     public Response getAllMovies() {
         QueryParameters query = createQuery();
         List<Movie> movies = moviesService.getMovies(query);
@@ -35,6 +37,7 @@ public class MoviesController {
 
     @GET
     @Path("{movieId}")
+    @Stats
     public Response getMovie(@PathParam("movieId") Long movieId) {
         Movie movie = moviesService.getMovie(movieId);
         return movie != null
@@ -43,6 +46,7 @@ public class MoviesController {
     }
 
     @POST
+    @Stats
     public Response addNewMovie(Movie movie) {
         boolean success = moviesService.addMovie(movie);
         return success ? Response.noContent().build() : Response.status(Response.Status.CONFLICT).build();
@@ -50,6 +54,7 @@ public class MoviesController {
 
     @PUT
     @Path("{movieId}")
+    @Stats
     public Response updateMovie(@PathParam("movieId") Long movieId, Movie movie) {
         boolean success = moviesService.updateMovie(movieId, movie);
         return success ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
@@ -57,13 +62,15 @@ public class MoviesController {
 
     @DELETE
     @Path("{movieId}")
+    @Stats
     public Response deleteMovie(@PathParam("movieId") Long movieId) {
         moviesService.deleteMovie(movieId);
         return Response.noContent().build();
     }
 
     @GET
-    @Path("/{movieId}/actors")
+    @Path("{movieId}/actors")
+    @Stats
     public Response getActors(@PathParam("movieId") Long movieId) {
         Movie movie = moviesService.getMovie(movieId);
         return movie != null
@@ -72,21 +79,24 @@ public class MoviesController {
     }
 
     @POST
-    @Path("/{movieId}/actors")
+    @Path("{movieId}/actors")
+    @Stats
     public Response addActor(@PathParam("movieId") Long movieId, Actor actor) {
         Movie movie = moviesService.addActor(movieId, actor);
         return movie != null ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @DELETE
-    @Path("/{movieId}/actors/{actorId}")
+    @Path("{movieId}/actors/{actorId}")
+    @Stats
     public Response removeActor(@PathParam("movieId") Long movieId, @PathParam("actorId") Long actorId) {
         moviesService.removeActor(movieId, actorId);
         return Response.noContent().build();
     }
 
     @GET
-    @Path("/search")
+    @Path("search")
+    @Stats
     public Response searchMovies(@QueryParam("keyword") String keyword) {
         List<Movie> movies = moviesService.searchByKeyword(keyword);
         return Response.ok(movies).build();

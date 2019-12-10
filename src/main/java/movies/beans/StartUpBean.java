@@ -1,3 +1,5 @@
+package movies.beans;
+
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
 

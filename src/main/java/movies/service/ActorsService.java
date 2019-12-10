@@ -3,7 +3,6 @@ package movies.service;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
 import movies.domain.Actor;
-import movies.domain.Movie;
 
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.EntityManager;

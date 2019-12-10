@@ -1,4 +1,4 @@
-package db;
+package movies.integrators;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
@@ -7,8 +7,6 @@ import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.integrator.spi.Integrator;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
