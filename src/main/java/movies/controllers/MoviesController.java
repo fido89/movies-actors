@@ -9,6 +9,7 @@ import movies.service.MoviesService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
@@ -45,7 +46,7 @@ public class MoviesController {
 
     @POST
     @Stats
-    public Response addNewMovie(MovieDto movie) {
+    public Response addNewMovie(@Valid MovieDto movie) {
         boolean success = moviesService.addMovie(movie);
         return success ? Response.noContent().build() : Response.status(Response.Status.CONFLICT).build();
     }
@@ -53,7 +54,7 @@ public class MoviesController {
     @PUT
     @Path("{movieId}")
     @Stats
-    public Response updateMovie(@PathParam("movieId") Long movieId, @Context Request request, MovieDto movie) {
+    public Response updateMovie(@PathParam("movieId") Long movieId, @Context Request request, @Valid MovieDto movie) {
         MovieDto existingMovie = moviesService.getMovie(movieId);
         if (existingMovie == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -90,7 +91,7 @@ public class MoviesController {
     @POST
     @Path("{movieId}/actors")
     @Stats
-    public Response addActor(@PathParam("movieId") Long movieId, ActorDto actor) {
+    public Response addActor(@PathParam("movieId") Long movieId, @Valid ActorDto actor) {
         Movie movie = moviesService.addActor(movieId, actor);
         return movie != null ? Response.ok(movie).build() : Response.status(Response.Status.NOT_FOUND).build();
     }

@@ -3,13 +3,19 @@ package movies.domain.dtos;
 import movies.domain.Actor;
 import movies.domain.Movie;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MovieDto {
     private Long id;
+    @NotNull
+    @Size(min = 1, max = 50)
     private String imdbId;
+    @NotNull
+    @Size(min = 1, max = 250)
     private String title;
     private int year;
     private String description;

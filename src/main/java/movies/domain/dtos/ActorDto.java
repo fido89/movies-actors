@@ -2,11 +2,16 @@ package movies.domain.dtos;
 
 import movies.domain.Actor;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 public class ActorDto {
     private Long id;
+    @NotNull
+    @Size(min = 1, max = 250)
     private String name;
+    @Size(max = 250)
     private String surname;
 
     public ActorDto() {

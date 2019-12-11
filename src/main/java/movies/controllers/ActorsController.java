@@ -7,6 +7,7 @@ import movies.service.ActorsService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.util.List;
@@ -43,7 +44,7 @@ public class ActorsController {
 
     @POST
     @Stats
-    public Response addNewActor(ActorDto actor) {
+    public Response addNewActor(@Valid ActorDto actor) {
         actorService.addActor(actor);
         return Response.noContent().build();
     }
@@ -51,7 +52,7 @@ public class ActorsController {
     @PUT
     @Path("{actorId}")
     @Stats
-    public Response updateActor(@PathParam("actorId") long actorId, @Context Request request, ActorDto actor) {
+    public Response updateActor(@PathParam("actorId") long actorId, @Context Request request, @Valid ActorDto actor) {
         ActorDto existingActor = actorService.getActor(actorId);
         if (existingActor == null) {
             return Response.status(Response.Status.NOT_FOUND).build();

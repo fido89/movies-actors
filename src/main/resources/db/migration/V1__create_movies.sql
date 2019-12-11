@@ -1,6 +1,6 @@
 CREATE TABLE movies (
   id IDENTITY NOT NULL PRIMARY KEY,
-  imdbID VARCHAR(50),
+  imdbID VARCHAR(50) NOT NULL,
   title VARCHAR(250) NOT NULL,
   year INT NOT NULL,
   description VARCHAR,

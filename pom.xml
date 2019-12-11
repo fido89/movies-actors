@@ -60,6 +60,14 @@
             <artifactId>hibernate-search-orm</artifactId>
             <version>5.11.4.Final</version>
         </dependency>
+        <dependency>
+            <groupId>com.kumuluz.ee</groupId>
+            <artifactId>kumuluzee-el-uel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.kumuluz.ee</groupId>
+            <artifactId>kumuluzee-bean-validation-hibernate-validator</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
