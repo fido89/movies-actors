@@ -10,10 +10,10 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class StatisticBeanTest {
     @Mock
@@ -23,7 +23,7 @@ public class StatisticBeanTest {
 
     @Test
     public void putToStatistic() {
-        String key = "key";
+        String key = "GET path";
         int n = 1000;
 
         IntStream.range(0, n).parallel().forEach(a -> statisticBean.putToStatistic(key));
@@ -31,6 +31,20 @@ public class StatisticBeanTest {
 
         List<String> expectedList = List.of(key + " " + n);
         verify(fileHelperMock, times(1)).write(any(), eq(expectedList));
+    }
+
+    @Test
+    public void postConstruct() {
+        String key = "GET path";
+        int n = 10;
+
+        List<String> linesInFile = List.of(key + " " + n);
+
+        when(fileHelperMock.exists(any())).thenReturn(true);
+        when(fileHelperMock.lines(any())).thenReturn(linesInFile.stream());
+
+        statisticBean.postConstruct(new Object());
+        assertEquals(n, statisticBean.getCountForKey(key));
     }
 
     @BeforeEach

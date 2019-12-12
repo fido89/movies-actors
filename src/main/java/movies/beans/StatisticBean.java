@@ -7,7 +7,6 @@ import javax.enterprise.context.Destroyed;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,10 +29,12 @@ public class StatisticBean {
     }
 
     public void postConstruct(@Observes @Initialized(ApplicationScoped.class) Object o) {
-        if (Files.exists(path)) {
+        if (fileHelper.exists(path)) {
             fileHelper.lines(path)
-                    .map(l -> l.split(" "))
-                    .forEach(a -> map.put(a[0], new AtomicInteger(Integer.valueOf(a[1]))));
+                    .forEach(line -> {
+                        int index = line.lastIndexOf(" ");
+                        map.put(line.substring(0, index), new AtomicInteger(Integer.valueOf(line.substring(index + 1))));
+                    });
         }
     }
 
@@ -42,5 +43,9 @@ public class StatisticBean {
         map.forEach((x, y) -> lines.add(x + " " + y.get()));
 
         fileHelper.write(path, lines);
+    }
+
+    protected int getCountForKey(String key) {
+        return map.getOrDefault(key, new AtomicInteger(0)).intValue();
     }
 }

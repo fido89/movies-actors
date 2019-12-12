@@ -26,4 +26,8 @@ public class FileHelper {
         }
         return null;
     }
+
+    public boolean exists(Path path) {
+        return Files.exists(path);
+    }
 }
